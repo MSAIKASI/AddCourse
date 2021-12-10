@@ -5,7 +5,9 @@ export class  CourseModel  {
   courseAssignment: CourseAssignmentModel = {
     startDate: new Date(0),
     endDate: new Date(0),
-    userId: "kasim"
+    courseId:0,
+    userId: "roshan",
+    assignedBy: ""
   };
   course: Course = {
     trainingPlatform: "" ,
@@ -25,8 +27,8 @@ export class Course {
   courseName: string;
   platformName: string;
   courseUrl: string;
-    learningHours: number;
-    category: string;
-    trainingType: string;
+  learningHours: number;
+  category: string;
+  trainingType: string;
     
 }

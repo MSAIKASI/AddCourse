@@ -8,16 +8,23 @@ import { ManagerAddCourseComponent } from './components/manager-add-course/manag
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { Ng2OrderModule } from 'ng2-order-pipe';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ModalModule, BsModalService } from 'ngx-bootstrap/modal';
+import { BsDropdownModule,BsDropdownConfig } from 'ngx-bootstrap/dropdown';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+
+
 
 
 @NgModule({
   declarations: [
     AppComponent,
     AddCourseComponent,
-    ManagerAddCourseComponent
+    ManagerAddCourseComponent,
   ],
+ 
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -26,9 +33,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ReactiveFormsModule,
     Ng2SearchPipeModule,
     CommonModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    BsDropdownModule,
+    Ng2OrderModule,
+    HttpClientTestingModule,
+    ModalModule.forRoot(),
   ],
-  providers: [],
+  providers: [BsModalService, BsDropdownConfig],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

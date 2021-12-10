@@ -1,1 +1,565 @@
-<p>add-course works!</p>
+<div class="container form-control col-md-7 mt-3 alert alert-secondary">
+  <h4 class="text-center mb-3">Add Course</h4>
+  <div class="form-row">
+    <div class="col-md-5">
+      <input
+        type="text"
+        class="form-control text-dark p-2"
+        [(ngModel)]="searchText"
+        (input)="search()"
+        placeholder="Search by Course Name or platform"
+      />
+    </div>
+    <div class="d-flex justify-content-end col-md-6 p-2">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="lgModal.show()"
+        (click)="resetForm()"
+      >
+        + Add New Course
+      </button>
+    </div>
+    <!-- sort -->
+    <!-- <div
+      class="btn-group p-2 d-flex justify-content-end col-md-3"
+      dropdown
+      #dropdown="bs-dropdown"
+      [autoClose]="false"
+    >
+      <button
+        id="button-basic"
+        dropdownToggle
+        type="button"
+        class="btn btn-primary dropdown-toggle"
+        aria-controls="dropdown-basic"
+      >
+        Sort By <span class="caret"></span>
+      </button>
+      <ul
+        id="dropdown-basic"
+        *dropdownMenu
+        class="dropdown-menu bg-secondary"
+        role="menu"
+        aria-labelledby="button-basic"
+      >
+        <li role="menuitem" (click)="sort('courseName')">
+          <a class="dropdown-item alert-danger"
+            >courseName&nbsp;<i class="fas fa-sort"></i
+          ></a>
+        </li>
+        <li role="menuitem" (click)="sort('platformName')">
+          <a class="dropdown-item alert-danger"
+            >platformName&nbsp;<i class="fas fa-sort"></i
+          ></a>
+        </li>
+        <li role="menuitem" (click)="sort('learningHours')">
+          <a class="dropdown-item alert-danger"
+            >Learning Hours&nbsp;<i class="fas fa-sort"></i
+          ></a>
+        </li>
+      </ul>
+    </div> -->
+    <!-- sort -->
+  </div>
+
+  <!-- List of courses -->
+
+  <div *ngIf="listEmpty; then displayList; else showError"></div>
+
+  <ng-template #displayList>
+    <div *ngFor="let row of courses | slice: 0:3 | orderBy: key:reverse">
+      <div class="card mt-3 p-2">
+        <h3 class="card-header bg-dark text-light p-1">
+          {{ row.courseName | uppercase }}
+        </h3>
+        <div class="card-body">
+          <div class="form-row">
+            <h4 class="card-title">Training Platform :</h4>
+
+            <h4 class="card-text ml-2">
+              {{ row.trainingPlatform | uppercase }}
+            </h4>
+          </div>
+          <div class="form-row">
+            <h4 class="card-title">Platform :</h4>
+
+            <h4 class="card-text ml-2">
+              {{ row.platformName | uppercase }}
+            </h4>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="onEdit(row)"
+              (click)="ref ? '' : lgModal.show()"
+            >
+              Enroll
+            </button>
+          </div>
+          <div class="form-row">
+            <h4 class="card-title">Learning Hours :</h4>
+
+            <h4 class="card-text ml-2">
+              {{ row.learningHours }}
+            </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #showError>
+    <br />
+    <h5 class="text-center">No results are Found</h5>
+  </ng-template>
+</div>
+
+<!-- ngx bootstrap long modal -->
+<div
+  bsModal
+  #lgModal="bs-modal"
+  class="modal fade"
+  [config]="{ backdrop: 'static' }"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-sizes-name1"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-sizes-name1" class="modal-title pull-left">
+          Add Course
+        </h4>
+        <button
+          type="button"
+          class="btn-close close pull-right"
+          (click)="lgModal.hide()"
+          (click)="resetForm()"
+          aria-label="Close"
+        >
+          <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body alert-secondary">
+        <form [formGroup]="formValue" class="needs-validation">
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="inputCourseName4" class="font-weight-bold"
+                >Training Platform</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="trainingPlatform"
+                placeholder="Enter Training Platform"
+                required
+              />
+              <small
+                *ngIf="trainingPlatform?.invalid && trainingPlatform?.touched"
+                class="text-danger"
+                >Training Platform is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="inputCourseName4" class="font-weight-bold"
+                >Course Name</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="courseName"
+                placeholder="Enter Course Name"
+                required
+              />
+              <small
+                *ngIf="courseName?.invalid && courseName?.touched"
+                class="text-danger"
+                >Course Name is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="inputPlatform4" class="font-weight-bold"
+                >Platform Name</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="platformName"
+                placeholder="Enter Platform Name"
+                required
+              />
+              <small
+                *ngIf="platformName?.invalid && platformName?.touched"
+                class="text-danger"
+                >Platform Name is Required</small
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputCourseUrl" class="font-weight-bold"
+                >Course URL</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="courseUrl"
+                placeholder="Enter Course Url"
+                required
+              />
+              <small
+                *ngIf="courseUrl?.invalid && courseUrl?.touched"
+                class="text-danger"
+                >Course URL is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="inputNoOfHours4" class="font-weight-bold"
+                >Learning Hours</label
+              >
+              <input
+                type="number"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="learningHours"
+                placeholder="Enter Learning Hours"
+                required
+                min="0"
+              />
+              <small
+                *ngIf="learningHours?.invalid && learningHours?.touched"
+                class="text-danger"
+                >Learning Hours is Required</small
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="category4" class="font-weight-bold">Category</label>
+              <select
+                name="category"
+                class="form-control"
+                [attr.disabled]="disabledValue ? '' : null"
+                formControlName="category"
+                placeholder="Enter Category"
+              >
+                <option value="Mandatory">Mandatory</option>
+                <option value="Non-Mandatory">Non-Mandatory</option>
+              </select>
+              <small
+                *ngIf="category?.invalid && category?.touched"
+                class="text-danger"
+                >This Field is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="trainingType4" class="font-weight-bold"
+                >Training Type</label
+              >
+              <select
+                name="trainingType"
+                class="form-control"
+                [attr.disabled]="disabledValue ? '' : null"
+                formControlName="trainingType"
+                placeholder="Enter Training Type"
+              >
+                <option value="Internal">Internal</option>
+                <option value="External">External</option>
+              </select>
+              <small
+                *ngIf="trainingType?.invalid && trainingType?.touched"
+                class="text-danger"
+                >This Field is Required</small
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="inputStartDate4" class="font-weight-bold"
+                >Start Date</label
+              >
+              <input
+                type="date"
+                class="form-control"
+                formControlName="startDate"
+                placeholder="Enter Start Date"
+                required
+              />
+              <small
+                *ngIf="startDate?.invalid && startDate?.touched"
+                class="text-danger"
+                >Start Date is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="inputEndDate4" class="font-weight-bold"
+                >End Date</label
+              >
+              <input
+                type="date"
+                class="form-control"
+                formControlName="endDate"
+                placeholder="Enter End Date"
+                min="{{ this.formValue.value.startDate }}"
+                required
+              />
+              <small
+                *ngIf="endDate?.invalid && endDate?.touched"
+                class="text-danger"
+                >End Date is Required</small
+              >
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="lgModal.hide()"
+          (click)="resetForm()"
+        >
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          (click)="
+            disabledValue ? postAssignmentDetails() : postCourseDetails()
+          "
+          [disabled]="formValue.invalid"
+          (click)="lgModal.hide()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<!-- <div
+  class="modal fade bd-example-modal-lg"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="myLargeModalLabel"
+  aria-hidden="true"
+  data-backdrop="false"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="myLargeModalLabel">Add Course</h3>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formValue" class="needs-validation">
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="inputCourseName4">Training Platform</label>
+              <input
+                type="text"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="trainingPlatform"
+                placeholder="Enter Training Platform"
+                required
+              />
+              <small
+                *ngIf="trainingPlatform?.invalid && trainingPlatform?.touched"
+                class="text-danger"
+                >Training Platform is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="inputCourseName4">Course Name</label>
+              <input
+                type="text"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="courseName"
+                placeholder="Enter Course Name"
+                required
+              />
+              <small
+                *ngIf="courseName?.invalid && courseName?.touched"
+                class="text-danger"
+                >Course Name is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="inputPlatform4">Platform Name</label>
+              <input
+                type="text"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="platformName"
+                placeholder="Enter Platform Name"
+                required
+              />
+              <small
+                *ngIf="platformName?.invalid && platformName?.touched"
+                class="text-danger"
+                >Platform Name is Required</small
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputCourseUrl">Course URL</label>
+              <input
+                type="text"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="courseUrl"
+                placeholder="Enter Course Url"
+                required
+              />
+              <small
+                *ngIf="courseUrl?.invalid && courseUrl?.touched"
+                class="text-danger"
+                >Course URL is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="inputNoOfHours4">Learning Hours</label>
+              <input
+                type="number"
+                class="form-control"
+                [readonly]="disabledValue"
+                formControlName="learningHours"
+                placeholder="Enter Learning Hours"
+                required
+                min="0"
+              />
+              <small
+                *ngIf="learningHours?.invalid && learningHours?.touched"
+                class="text-danger"
+                >Learning Hours is Required</small
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="inputStartDate4">Start Date</label>
+              <input
+                type="date"
+                class="form-control"
+                formControlName="startDate"
+                placeholder="Enter Start Date"
+                min="{{ minDate }}"
+                required
+              />
+              <small
+                *ngIf="startDate?.invalid && startDate?.touched"
+                class="text-danger"
+                >Start Date is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="inputEndDate4">End Date</label>
+              <input
+                type="date"
+                class="form-control"
+                formControlName="endDate"
+                placeholder="Enter End Date"
+                min="{{ minDate }}"
+                required
+              />
+              <small
+                *ngIf="endDate?.invalid && endDate?.touched"
+                class="text-danger"
+                >End Date is Required</small
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="category4">Category</label>
+              <select
+                name="category"
+                class="form-control"
+                formControlName="category"
+                placeholder="Enter Category"
+              >
+                <option value="Mandatory">Mandatory</option>
+                <option value="Non-Mandatory">Non-Mandatory</option>
+              </select>
+              <small
+                *ngIf="category?.invalid && category?.touched"
+                class="text-danger"
+                >This Field is Required</small
+              >
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="trainingType4">Training Type</label>
+              <select
+                name="trainingType"
+                class="form-control"
+                formControlName="trainingType"
+                placeholder="Enter Training Type"
+              >
+                <option value="Internal">Internal</option>
+                <option value="External">External</option>
+              </select>
+              <small
+                *ngIf="trainingType?.invalid && trainingType?.touched"
+                class="text-danger"
+                >This Field is Required</small
+              >
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-dismiss="modal"
+          (click)="resetForm()"
+        >
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          (click)="
+            disabledValue ? postAssignmentDetails() : postCourseDetails()
+          "
+          [disabled]="formValue.invalid"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div> -->

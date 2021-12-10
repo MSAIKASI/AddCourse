@@ -45,16 +45,14 @@ export class ManagerAddCourseComponent implements OnInit {
   }
 
   managerAddCourse() {
-    this.courseModel.courseAssignment.startDate =this.formValue.value.startDate;
-    this.courseModel.courseAssignment.endDate = this.formValue.value.endDate;
-    this.courseModel.course.category = this.formValue.value.category;
-    this.courseModel.course.trainingType = this.formValue.value.trainingType;
-    this.courseModel.course.courseName = this.formValue.value.courseName;
-    this.courseModel.course.trainingPlatform = this.formValue.value.trainingPlatform;
-    this.courseModel.course.platformName = this.formValue.value.platformName;
-    this.courseModel.course.courseUrl = this.formValue.value.courseUrl;
-    this.courseModel.course.learningHours = this.formValue.value.learningHours;
-    let findUrl = this.courses.filter(course => course.courseUrl == this.formValue.value.courseUrl);
+    this.course.category = this.formValue.value.category;
+    this.course.trainingType = this.formValue.value.trainingType;
+    this.course.courseName = this.formValue.value.courseName;
+    this.course.trainingPlatform = this.formValue.value.trainingPlatform;
+    this.course.platformName = this.formValue.value.platformName;
+    this.course.courseUrl = this.formValue.value.courseUrl;
+    this.course.learningHours = this.formValue.value.learningHours;
+    let findUrl = this.courses?this.courses.filter(course => course.courseUrl == this.formValue.value.courseUrl):[];
       if (findUrl.length > 0) {
         alert("This course is already exist ");
         return;

@@ -1,4 +1,7 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { ManagerAddCourseComponent } from './manager-add-course.component';
 
@@ -8,6 +11,7 @@ describe('ManagerAddCourseComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports:[ReactiveFormsModule,RouterTestingModule,HttpClientTestingModule ],
       declarations: [ ManagerAddCourseComponent ]
     })
     .compileComponents();
@@ -22,4 +26,7 @@ describe('ManagerAddCourseComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+ 
+
 });

@@ -1,5 +1,8 @@
 export class CourseAssignmentModel {
-    startDate: Date;
-    endDate: Date;
-    userId: string = "kasim";  
+  assignmentId?: number;
+  startDate: Date;
+  endDate: Date;
+  courseId: number;
+  userId: string;
+  assignedBy: string;
   }

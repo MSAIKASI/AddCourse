@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import {  FormBuilder,FormControl,FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { CourseModel,Course } from 'src/app/models/course.model';
+import { CourseAssignmentModel } from 'src/app/models/courseAssignment.model';
 import { AddCourseService } from 'src/app/services/addCourse.service';
 
 @Component({
@@ -11,20 +13,27 @@ import { AddCourseService } from 'src/app/services/addCourse.service';
   providers: [AddCourseService],
 })
 export class AddCourseComponent implements OnInit {
-  searchText:string ;
-  courses: Course[];
-  disabledValue = false;
-
+  searchText:any ;
+  courses: Course[] = [];
+  assignments: CourseAssignmentModel[] = [];
+  disabledValue:boolean = false;
+  ref: boolean = false;
+  listEmpty:boolean = false;
   formValue: FormGroup;
   courseModel: CourseModel = new CourseModel();
+  modalRef: BsModalRef;
   
-
-
   constructor(
     private formbuilder: FormBuilder,
-    private addCourseService: AddCourseService, private router: Router) {
+    private addCourseService: AddCourseService,
+    private router: Router,
+    private modalService: BsModalService) {
     
-    }
+  }
+  
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template);
+ }
 
   ngOnInit(): void {
     this.formValue = this.formbuilder.group({
@@ -41,6 +50,7 @@ export class AddCourseComponent implements OnInit {
     });
     this.getDate();
     this.getCourses();
+    this.getCourseByUserId();
     this.formValue = new FormGroup({
       trainingPlatform: new FormControl(null, Validators.required),
       courseName: new FormControl(null, Validators.required),
@@ -66,8 +76,8 @@ export class AddCourseComponent implements OnInit {
     this.courseModel.course.platformName = this.formValue.value.platformName;
     this.courseModel.course.courseUrl = this.formValue.value.courseUrl;
     this.courseModel.course.learningHours = this.formValue.value.learningHours;
-    
-      let findUrl = this.courses.filter(course => course.courseUrl == this.formValue.value.courseUrl);
+    this.courseModel.courseAssignment.assignedBy = this.courseModel.courseAssignment.userId;
+    let findUrl = this.courses?this.courses.filter(course => course.courseUrl == this.formValue.value.courseUrl):[];
     if (findUrl.length > 0) {
         alert("This course is already existing ");
         return;
@@ -95,24 +105,36 @@ export class AddCourseComponent implements OnInit {
     this.courseModel.course.platformName = this.formValue.value.platformName;
     this.courseModel.course.courseUrl = this.formValue.value.courseUrl;
     this.courseModel.course.learningHours = this.formValue.value.learningHours;
+    this.courseModel.courseAssignment.assignedBy = this.courseModel.courseAssignment.userId;
     this.addCourseService.addNewAssignment(this.courseModel).subscribe(
         (res) => {
           console.log(res);
-          alert('Course Added Successfully !!!');
+        alert('Course Added Successfully !!!');
         this.formValue.reset();
         this.getCourses();
+        this.getCourseByUserId();
         }
       );  
   }
 
   onEdit(row: any) {
     this.courseModel.course.courseId = row.courseId;
-    this.formValue.controls['trainingPlatform'].setValue(row.trainingPlatform);
-    this.formValue.controls['courseName'].setValue(row.courseName);
-    this.formValue.controls['platformName'].setValue(row.platformName);
-    this.formValue.controls['courseUrl'].setValue(row.courseUrl);
-    this.formValue.controls['learningHours'].setValue(row.learningHours);
-    this.disabledValue = true;
+    let findId = this.assignments.filter(assignment => assignment.courseId == row.courseId);
+    if (findId.length <= 0) {
+      this.formValue.controls['trainingPlatform'].setValue(row.trainingPlatform);
+      this.formValue.controls['courseName'].setValue(row.courseName);
+      this.formValue.controls['platformName'].setValue(row.platformName);
+      this.formValue.controls['courseUrl'].setValue(row.courseUrl);
+      this.formValue.controls['learningHours'].setValue(row.learningHours);
+      this.formValue.controls['category'].setValue(row.category);
+      this.formValue.controls['trainingType'].setValue(row.trainingType);
+      this.disabledValue = true;
+      this.ref = false;
+      return;
+      }
+    
+    alert("This course is already enrolled ");
+    this.ref = true;
 
   }
 
@@ -121,8 +143,18 @@ export class AddCourseComponent implements OnInit {
   getCourses() {
       this.addCourseService.getAllCourses().subscribe(res => {
         this.courses = res;
+        if(this.courses.length>0){
+          this.listEmpty = true;
+        }
       })
       return;
+  }
+
+  getCourseByUserId() {
+    this.addCourseService.getCoursesByUserId('kasim').subscribe(res => {
+      this.assignments = res;
+    })
+    return;
   }
   
  
@@ -143,9 +175,6 @@ export class AddCourseComponent implements OnInit {
     this.minDate = year + "-" + month + "-" + toDate;
     console.log(this.minDate);
   }
-
-  
- 
 
 // Validators
   get trainingPlatform() {
@@ -178,26 +207,31 @@ export class AddCourseComponent implements OnInit {
 
 
   search() {
-    if(this.searchText=""){
-      this.courses = this.courses.filter(res => {
-        return (res.courseName.toLocaleLowerCase().match(this.searchText.toLocaleLowerCase()) ||res.platformName.toLocaleLowerCase().match(this.searchText.toLocaleLowerCase()))
-      });
-    
-    }else if (this.searchText == "") {
+    if (this.searchText == "") {
       this.ngOnInit();
-      
+    }
+    else{
+      this.courses = this.courses.filter(res => res.courseName.toLocaleLowerCase().match(this.searchText.toLocaleLowerCase()) || res.platformName.toLocaleLowerCase().match(this.searchText.toLocaleLowerCase()));
+      if(this.courses.length>0){
+        this.listEmpty = true;
+      }
       } 
   }
-
-  goToAddCourse() {
-    this.router.navigate(['/addcourse']);
-  }
-
 
   resetForm() {
     this.formValue.reset();
     this.disabledValue = false;
+  }
+
+  // sort
+  key = 'id';
+  reverse: boolean = false;
+  sort(key: any) {
+    this.key = key;
+    this.reverse = !this.reverse;
     
   }
+
+  
   
 }

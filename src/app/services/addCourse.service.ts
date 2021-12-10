@@ -12,9 +12,11 @@ export class AddCourseService {
     course:Course;
   baseUrl = 'http://localhost:8080/api/addassignment';
 
-  baseUrl2 = 'http://localhost:8080/api/course/';
+  baseUrl2 = 'http://localhost:8080/api/course';
 
   constructor(private httpClient: HttpClient) {}
+
+  //course assignment Api's
 
   addNewAssignment(courseModel: CourseModel): Observable<Object> {
     return this.httpClient.post(`${this.baseUrl}/createassignment/${this.courseAssignment.userId}`, courseModel).pipe(
@@ -32,11 +34,21 @@ export class AddCourseService {
     );
   }
 
+  getCoursesByUserId(userId: any) {
+    return this.httpClient.get<any>( `http://localhost:8080/api/addassignment/coursebyuserid/${userId}`).pipe(
+      map((res: any) => {
+        return res;
+      })
+    );
+  }
+
+  
+
     
-    //course apis
+  //course apis
 
   createCourse(course: Course) :Observable<Object>{
-    return this.httpClient.post(`${this.baseUrl2}/create/`,course).pipe(
+    return this.httpClient.post(`${this.baseUrl2}/create`,course).pipe(
       map((res: any) => {
         return res;
       })
